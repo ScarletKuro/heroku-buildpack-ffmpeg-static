@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+indent() {
+  sed -u 's/^/       /'
+}
+
+LIBRARY="ffmpeg"
+
+FFMPEG_VERSION="release"
+
+echo "-----> Install $LIBRARY $FFMPEG_VERSION"
+
+BUILD_DIR="$1"
+
+VENDOR_DIR="vendor"
+VENDOR_PATH="$BUILD_DIR/$VENDOR_DIR"
+
+PROFILE_PATH="$BUILD_DIR/.profile.d"
+INSTALL_PATH="$VENDOR_PATH/$LIBRARY"
+
+DOWNLOAD_URL="http://johnvansickle.com/ffmpeg/releases/ffmpeg-$FFMPEG_VERSION-64bit-static.tar.xz"
+
+echo "DOWNLOAD_URL = " $DOWNLOAD_URL | indent
+
+mkdir -p "$INSTALL_PATH"
+cd "$INSTALL_PATH"
+
+curl -L --silent $DOWNLOAD_URL | tar xJ --strip-components=1
+
+mkdir -p "$PROFILE_PATH"
+EXPORT_PATH='export PATH="$PATH:$HOME/'"$VENDOR_DIR/$LIBRARY"'"'
+echo "$EXPORT_PATH" >> "$PROFILE_PATH/$LIBRARY.sh"
